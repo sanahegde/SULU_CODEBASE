@@ -1,49 +1,102 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Typography, Box, Container } from '@mui/material';
-import api from '../api/api';
+import { TextField, Button, Typography, Container, Paper, Avatar } from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import axios from 'axios';
 
-function Register() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+const Register = () => {
+  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
 
-  const handleRegister = async () => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      await api.post('/auth/register', { username, password });
-      navigate('/');
+      const response = await axios.post('http://localhost:5000/api/auth/register', formData);
+      alert(response.data.message);
     } catch (error) {
-      console.error('Registration failed', error);
+      alert('Registration failed');
     }
   };
 
   return (
-    <Container maxWidth="xs">
-      <Box sx={{ mt: 8 }}>
-        <Typography variant="h4" gutterBottom>
-          Register
+    <Container
+      component="main"
+      disableGutters
+      maxWidth={false}
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #8e85c5, #5a6686)',
+        padding: 0,
+      }}
+    >
+      <Paper
+        elevation={6}
+        sx={{
+          padding: '20px',
+          borderRadius: '10px',
+          width: '100%',
+          maxWidth: '400px',
+          textAlign: 'center',
+          margin: '0 16px',
+        }}
+      >
+        <Avatar sx={{ margin: '0 auto', backgroundColor: '#3f51b5' }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5" sx={{ marginBottom: '20px' }}>
+          Sign Up
         </Typography>
-        <TextField
-          label="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
-        <Button variant="contained" color="primary" onClick={handleRegister} fullWidth sx={{ mt: 2 }}>
-          Register
-        </Button>
-      </Box>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Username"
+            name="username"
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            onChange={handleChange}
+            required
+          />
+          <TextField
+            label="Email"
+            name="email"
+            type="email"
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            onChange={handleChange}
+            required
+          />
+          <TextField
+            label="Password"
+            name="password"
+            type="password"
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            onChange={handleChange}
+            required
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ marginTop: '20px' }}
+          >
+            Register
+          </Button>
+        </form>
+        <Typography variant="body2" color="textSecondary" align="center" sx={{ marginTop: '20px' }}>
+          Already have an account? <a href="/login" style={{ color: '#3f51b5', textDecoration: 'none' }}>Login</a>
+        </Typography>
+      </Paper>
     </Container>
   );
-}
+};
 
 export default Register;
